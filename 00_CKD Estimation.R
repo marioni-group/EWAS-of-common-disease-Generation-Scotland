@@ -1,5 +1,3 @@
-setwd("U://Datastore//IGMM//marioni-lab//Rob//EWAS_Disease_GS//") 
-
 ## Censoring Date - all years ###
 
 d1 <- read.csv("censoring_oct2020.csv", check.names = F)

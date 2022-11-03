@@ -88,7 +88,7 @@ for(j in 1:nrow(res)){
   ids3=cov2$Sample_Sentrix_ID
   meth1=meth1[match(ids3,row.names(meth1)),]
   # Run model
-  mod = coxph(Surv(cov2$tte, cov2$Event) ~ meth1[,as.character(cpg)] + cov2$age + factor(cov2$sex))
+  mod = coxph(Surv(cov2$tte, cov2$Event) ~ scale(meth1[,as.character(cpg)]) + cov2$age + factor(cov2$sex)+ cov2$Bcell + cov2$NK + cov2$Gran + cov2$CD4T + cov2$CD8T + log(cov2$bmi)  + cov2$units + cov2$years + cov2$smokingScore  + factor(cov2$usual) + cov$rank + cov2$V3 + cov2$V4 + cov2$V5 + cov2$V6 + cov2$V7 + cov2$V8 + cov2$V9 + cov2$V10 + cov2$V11 + cov2$V12 + cov2$V13 + cov2$V14 + cov2$V15 + cov2$V16 + cov2$V17 + cov2$V18 + cov2$V19 + cov2$V20 + cov2$V21 + cov2$V22)
   # Store CpG 
   mat.res[(j+(13*(j-1)))+(hr-1),1] <- as.character(cpg)
   # Store Trait

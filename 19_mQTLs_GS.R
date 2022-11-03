@@ -8,17 +8,18 @@ library(limma)
 #################################################################
 
 # Read in results file 
-tmp=read.csv("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Results/Results_Final/incident_full.csv")
-
+tmp=read.csv("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Cleaned_Results/incident_full.csv")
+tmps=read.csv("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Cleaned_Results/prevalent_full.csv")
 # Remove traits with <20 individuals for analyses 
 tmp=tmp[!tmp$trait %in% c("cervical_cancer"),]
+cpg=c(tmp$Probe, tmps$Probe)
 
 # Read in Methylation Data and Sample Information 
 dnam=readRDS("/Cluster_Filespace/Marioni_Group/GS/GS_methylation/GS20k/mvals.rds")
 samps=readRDS("/Cluster_Filespace/Marioni_Group/GS/GS_methylation/GS20k/GS20k_Targets.rds")
 
 # Subset CpGs to those with significant associations with disease 
-dnam1=dnam[which(row.names(dnam)%in%tmp$Probe),]
+dnam1=dnam[which(row.names(dnam)%in%cpg),]
 
 # Subset individuals to those with genetic data 
 gs=read.table("/Cluster_Filespace/Marioni_Group/Daniel/GWAS_AgeAccel/Meta_Analysis_Daniel/cojo_files/GS_HRC/GS20K_chr10_HRC.r1-1_nomono_I4_cpra.fam") 
@@ -38,7 +39,7 @@ ids=cov2$Sample_Sentrix_ID
 dnam1=dnam1[,match(ids,colnames(dnam1))]
 
  # Residualisation step 
-design.resid <- model.matrix(~as.factor(sex) + age + as.factor(Batch) + smokingScore + NK + Gran + Bcell + CD4T + CD8T + V3 + V4 + V5 + V6 + V7 + V8 + V9 + V10 + V11 + V12 + V13 + V14 + V15 + V16 + V17 + V18 + V19 + V20 + V21 + V22, data=cov1)
+design.resid <- model.matrix(~as.factor(sex) + age + as.factor(Batch), data=cov2)
 fit.resid <- limma::lmFit(dnam1, design.resid)
 gc()
 dnam2 <- limma::residuals.MArrayLM(fit.resid, dnam1)

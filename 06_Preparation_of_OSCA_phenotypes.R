@@ -135,21 +135,3 @@ for(i in inc.sex){
   write.table(mod.resid, paste0("Prevalent/Phenotypes/PCs/",i),row.names=F, sep=' ', quote = T)
   }
 
-
-
-
-# ## CVD for Ola/Riccardo
-# tmp=read.table("CVD.phen",header=T)
-# ## Merge in with covariate file
-# tmp1=merge(tmp, cov1, by = "Sample_Name")
-# ## Run coxph model to get martingale residuals  
-# mod=coxph(Surv(tmp1$tte, tmp1$Event) ~ tmp1$age + factor(tmp1$sex))
-# ## Extract martingale residuals 
-# mod.resid=as.data.frame(residuals(mod, type = "martingale"))
-# names(mod.resid)[1] <- "phen"
-# mod.resid$FID<-tmp1$Sample_Sentrix_ID.x
-# mod.resid$IID<-tmp1$Sample_Sentrix_ID.x
-# ## Tidy up dataframe
-# mod.resid<-mod.resid[,c("FID","IID","phen")]
-# ## Write out dataframe 
-# write.table(mod.resid, "CVD_osca.phen",row.names=F, sep=' ', quote = T)

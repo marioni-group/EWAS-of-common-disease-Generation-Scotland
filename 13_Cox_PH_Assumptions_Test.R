@@ -50,9 +50,9 @@ row.names(meth)=ids
 
 #### We will focus on fully-adjusted models #####
 
-res=list.files("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Results/Results_Final/",".csv")
-res=res[grep("wbcs",res)]
-i=res[3]
+res=list.files("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Cleaned_Results/",".csv")
+res=res[grep("full",res)]
+res=res[which(res %in% c("prevalent_full.csv", "incident_full.csv"))]
 
 ##############################################################
 ##### STEP 4. LOOP FOR COX.ZPH MODELS ########################
@@ -62,9 +62,10 @@ i=res[3]
 
 # Set up loop to loop through results files 
 # Read in fully-adjusted model 
-  tmp.res=read.csv(paste0("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Results/Results_Final//",i))
-  tmp.res=tmp.res[!tmp.res$trait %in% c("cervical_cancer", "breast_cancer", "prostate_cancer", "ovarian_cancer"),]
-# Set up matrix to store lmekin result 
+  i=res[1]
+  tmp.res=read.csv(paste0("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Cleaned_Results/",i))
+  tmp.res=tmp.res[!tmp.res$trait %in% c("cervical_cancer","covid_hospitalisation", "breast_cancer", "prostate_cancer", "ovarian_cancer"),]
+# Set up matrix to store cox.zph result 
   mat.res=as.data.frame(matrix(nrow=nrow(tmp.res),ncol=6))
   names(mat.res) <- c("CpG", "Trait", "Log.Odds","P", "Cox.Zph_Local", "Cox.Zph_Global")
   # Extract model name 
@@ -85,7 +86,7 @@ trait=tmp.res[j,"trait"]
   ids3=cov2$Sample_Sentrix_ID
   meth1=meth1[match(ids3,row.names(meth1)),]
   # Run model
-  mod = coxph(Surv(cov2$tte, cov2$Event) ~ meth1[,as.character(cpg)]+ cov2$age + factor(cov2$sex) + cov2$Bcell + cov2$NK + cov2$Gran + cov2$CD4T + cov2$CD8T + log(cov2$bmi)  + cov2$units + cov2$years + cov2$smokingScore  + factor(cov2$usual) + cov2$V3 + cov2$V4 + cov2$V5 + cov2$V6 + cov2$V7 + cov2$V8 + cov2$V9 + cov2$V10 + cov2$V11 + cov2$V12 + cov2$V13 + cov2$V14 + cov2$V15 + cov2$V16 + cov2$V17 + cov2$V18 + cov2$V19 + cov2$V20 + cov2$V21 + cov2$V22)
+  mod = coxph(Surv(cov2$tte, cov2$Event) ~ scale(meth1[,as.character(cpg)])+ cov2$age + factor(cov2$sex) + cov2$Bcell + cov2$NK + cov2$Gran + cov2$CD4T + cov2$CD8T + log(cov2$bmi)  + cov2$units + cov2$years + cov2$smokingScore  + factor(cov2$usual) + cov2$V3 + cov2$V4 + cov2$V5 + cov2$V6 + cov2$V7 + cov2$V8 + cov2$V9 + cov2$V10 + cov2$V11 + cov2$V12 + cov2$V13 + cov2$V14 + cov2$V15 + cov2$V16 + cov2$V17 + cov2$V18 + cov2$V19 + cov2$V20 + cov2$V21 + cov2$V22)
   # Store CpG 
   mat.res[j,1] <- as.character(cpg)
   # Store Trait
@@ -99,13 +100,13 @@ trait=tmp.res[j,"trait"]
   # Print to denote completion
   print(j)
   }
- write.csv(mat.res,"/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Sensitivity/coxph/incident_wbcs_withsex.csv",row.names=F) 
+ write.csv(mat.res,"/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Sensitivity/coxph/incident_full_withsex.csv",row.names=F) 
   
   ## Sex-specific analyses
   # Set up loop to loop through results files 
   # Read in fully-adjusted model 
- tmp.res=read.csv(paste0("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Results/Results_Final//",i))
- tmp.res=tmp.res[tmp.res$trait %in% c("breast_cancer", "prostate_cancer", "ovarian_cancer"),]
+ tmp.res=read.csv(paste0("/Cluster_Filespace/Marioni_Group/Rob/EWAS_Disease_GS/Cleaned_Results/",i))
+ tmp.res=tmp.res[tmp.res$trait %in% c("breast_cancer", "prostate_cancer", "ovarian_cancer", "covid_hospitalisation"),]
  # Set up matrix to store lmekin result 
  mat.res=as.data.frame(matrix(nrow=nrow(tmp.res),ncol=6))
  names(mat.res) <- c("CpG", "Trait", "Log.Odds","P", "Cox.Zph_Local", "Cox.Zph_Global")
@@ -127,7 +128,7 @@ trait=tmp.res[j,"trait"]
    ids3=cov2$Sample_Sentrix_ID
    meth1=meth1[match(ids3,row.names(meth1)),]
    # Run model
-   mod = coxph(Surv(cov2$tte, cov2$Event) ~ meth1[,as.character(cpg)]+ cov2$age + cov2$Bcell + cov2$NK + cov2$Gran + cov2$CD4T + cov2$CD8T + log(cov2$bmi)  + cov2$units + cov2$years + cov2$smokingScore  + factor(cov2$usual) + cov2$V3 + cov2$V4 + cov2$V5 + cov2$V6 + cov2$V7 + cov2$V8 + cov2$V9 + cov2$V10 + cov2$V11 + cov2$V12 + cov2$V13 + cov2$V14 + cov2$V15 + cov2$V16 + cov2$V17 + cov2$V18 + cov2$V19 + cov2$V20 + cov2$V21 + cov2$V22)
+   mod = coxph(Surv(cov2$tte, cov2$Event) ~ scale(meth1[,as.character(cpg)])+ cov2$age + cov2$Bcell + cov2$NK + cov2$Gran + cov2$CD4T + cov2$CD8T + log(cov2$bmi)  + cov2$units + cov2$years + cov2$smokingScore  + factor(cov2$usual) + cov2$V3 + cov2$V4 + cov2$V5 + cov2$V6 + cov2$V7 + cov2$V8 + cov2$V9 + cov2$V10 + cov2$V11 + cov2$V12 + cov2$V13 + cov2$V14 + cov2$V15 + cov2$V16 + cov2$V17 + cov2$V18 + cov2$V19 + cov2$V20 + cov2$V21 + cov2$V22)
    # Store CpG 
    mat.res[j,1] <- as.character(cpg)
    # Store Trait
